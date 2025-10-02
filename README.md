@@ -1,59 +1,171 @@
-# MongoDB Fundamentals - Week 1
+# 📚 PLP Bookstore (MongoDB Assignment)
 
-## Setup Instructions
+This project is part of the **PLP MERN Stack Course**.  
+It demonstrates working with **MongoDB** — from inserting data to performing CRUD operations, advanced queries, aggregation pipelines, and indexing.
 
-Before you begin this assignment, please make sure you have the following installed:
+---
 
-1. **MongoDB Community Edition** - [Installation Guide](https://www.mongodb.com/docs/manual/administration/install-community/)
-2. **MongoDB Shell (mongosh)** - This is included with MongoDB Community Edition
-3. **Node.js** - [Download here](https://nodejs.org/)
+## 🚀 Project Setup
 
-### Node.js Package Setup
+1. Install **MongoDB** and **MongoDB Compass** on your machine.
+2. Clone this repository or create a new folder for the project:
+   mkdir plp_bookstore && cd plp_bookstore
+3. Initialize Node.js:
+   npm init -y
+4. Install MongoDB driver:
+   npm install mongodb
 
-Once you have Node.js installed, run the following commands in your assignment directory:
+---
 
-```bash
-# Initialize a package.json file
-npm init -y
+## 📂 Files in this Project
 
-# Install the MongoDB Node.js driver
-npm install mongodb
-```
+- insert_books.js → Inserts 12 book documents into the books collection.
+- queries.js → Contains all MongoDB queries (CRUD, advanced queries, aggregation, indexing).
+- README.md → Project documentation.
 
-## Assignment Overview
+---
 
-This week focuses on MongoDB fundamentals including:
-- Creating and connecting to MongoDB databases
-- CRUD operations (Create, Read, Update, Delete)
-- MongoDB queries and filters
-- Aggregation pipelines
-- Indexing for performance
+## 🗄️ Database Structure
 
-## Submission
+- Database: plp_bookstore
+- Collection: books
+- Sample Fields:
+  {
+    "title": "1984",
+    "author": "George Orwell",
+    "genre": "Dystopian",
+    "published_year": 1949,
+    "price": 10.99,
+    "in_stock": true,
+    "pages": 328,
+    "publisher": "Secker & Warburg"
+  }
 
-Complete all the exercises in this assignment and push your code to GitHub using the provided GitHub Classroom link.
+---
 
-## Getting Started
+## 🛠️ Tasks Implemented
 
-1. Accept the GitHub Classroom assignment invitation
-2. Clone your personal repository that was created by GitHub Classroom
-3. Install MongoDB locally or set up a MongoDB Atlas account
-4. Run the provided `insert_books.js` script to populate your database
-5. Complete the tasks in the assignment document
+### ✅ Task 1: Insert Data
+Run:
+  node insert_books.js
 
-## Files Included
+This inserts 12 books into the books collection.
 
-- `Week1-Assignment.md`: Detailed assignment instructions
-- `insert_books.js`: Script to populate your MongoDB database with sample book data
+---
 
-## Requirements
+### ✅ Task 2: Basic CRUD
 
-- Node.js (v18 or higher)
-- MongoDB (local installation or Atlas account)
-- MongoDB Shell (mongosh) or MongoDB Compass
+- Find all Fiction books  
+  db.books.find({ genre: "Fiction" })
 
-## Resources
+- Find books published after 1950  
+  db.books.find({ published_year: { $gt: 1950 } })
 
-- [MongoDB Documentation](https://docs.mongodb.com/)
-- [MongoDB University](https://university.mongodb.com/)
-- [MongoDB Node.js Driver](https://mongodb.github.io/node-mongodb-native/) 
+- Find books by George Orwell  
+  db.books.find({ author: "George Orwell" })
+
+- Update price of The Hobbit  
+  db.books.updateOne(
+    { title: "The Hobbit" },
+    { $set: { price: 16.99 } }
+  )
+
+- Delete book "Moby Dick"  
+  db.books.deleteOne({ title: "Moby Dick" })
+
+---
+
+### ✅ Task 3: Advanced Queries
+
+- Find in-stock books published after 2010  
+  db.books.find({ in_stock: true, published_year: { $gt: 2010 } })
+
+- Projection (title, author, price only)  
+  db.books.find({}, { title: 1, author: 1, price: 1, _id: 0 })
+
+- Sorting by price (ascending / descending)  
+  db.books.find().sort({ price: 1 })  
+  db.books.find().sort({ price: -1 })
+
+- Pagination (5 per page)  
+  db.books.find().skip(0).limit(5)   // page 1  
+  db.books.find().skip(5).limit(5)   // page 2
+
+---
+
+### ✅ Task 4: Aggregation Pipelines
+
+- Average price of books by genre  
+  db.books.aggregate([
+    { $group: { _id: "$genre", avgPrice: { $avg: "$price" } } }
+  ])
+
+- Author with the most books  
+  db.books.aggregate([
+    { $group: { _id: "$author", totalBooks: { $sum: 1 } } },
+    { $sort: { totalBooks: -1 } },
+    { $limit: 1 }
+  ])
+
+- Group books by publication decade  
+  db.books.aggregate([
+    {
+      $project: {
+        decade: { $subtract: ["$published_year", { $mod: ["$published_year", 10] }] }
+      }
+    },
+    { $group: { _id: "$decade", count: { $sum: 1 } } },
+    { $sort: { _id: 1 } }
+  ])
+
+---
+
+### ✅ Task 5: Indexing
+
+- Create index on title  
+  db.books.createIndex({ title: 1 })
+
+- Compound index on author and published_year  
+  db.books.createIndex({ author: 1, published_year: -1 })
+
+- Use explain() to show performance improvement  
+  db.books.find({ title: "1984" }).explain("executionStats")
+
+---
+
+## 📸 Screenshots
+
+- Screenshot of 12 inserted documents in Compass.  
+- Screenshot results of CRUD queries.  
+- Screenshot results of aggregation pipelines.  
+- Screenshot of created indexes.
+
+---
+
+## 📌 How to Run Queries
+
+### Using Mongo Shell
+- Open terminal:
+  mongosh
+- Switch to database:
+  use plp_bookstore
+- Copy queries from queries.js.
+
+### Using MongoDB Compass
+- Open plp_bookstore → books.  
+- Paste queries in the **Filter** box or **Aggregation** tab.  
+- Click **Find** to view results.
+
+---
+
+## 🎯 Outcome
+
+By completing this project, we practiced:
+- MongoDB CRUD operations  
+- Advanced queries  
+- Aggregation pipelines  
+- Indexing & query optimization  
+
+---
+
+👨🏾‍💻 Author: Joshua Nuru
